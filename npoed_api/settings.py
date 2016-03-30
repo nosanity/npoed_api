@@ -38,8 +38,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api',
+    'authentication',
     'rest_framework',
     'rest_framework_swagger',
+    'sso_edx_npoed',
+    'social.apps.django_app.default'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,7 +61,7 @@ ROOT_URLCONF = 'npoed_api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -98,13 +101,28 @@ USE_L10N = True
 
 USE_TZ = True
 
+AUTHENTICATION_BACKENDS = (
+    'authentication.auth.CustomNpoedBackend',
+    'django.contrib.auth.backends.ModelBackend'
+)
+
+SOCIAL_AUTH_ENABLED_BACKENDS=('npoedsso', )
+SSO_NPOED_BACKEND_NAME = 'npoedsso'
+
+
+LOGIN_URL = '/login/npoedsso/'
+LOGOUT_URL = '/sso-logout/'
+LOGIN_REDIRECT_URL = '/'
+
+SOCIAL_AUTH_EXCLUDE_URL_PATTERN = r'^/admin'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
 
-URL_PREFIX = 'http'
-PLP_HOST = 'plp-local.npoed.ru:8080'
-
-PLP_URL = '{}://{}'.format(URL_PREFIX, PLP_HOST)
+try:
+    from local_settings import *
+except ImportError:
+    print "CRITICAL: You must specify local_settings.py"
+    exit()

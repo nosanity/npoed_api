@@ -1,0 +1,9 @@
+URL_PREFIX = 'http'
+PLP_HOST = 'plp-local.npoed.ru:8080'
+
+PLP_URL = '{}://{}'.format(URL_PREFIX, PLP_HOST)
+
+SSO_NPOED_URL = 'http://sso-local.npoed.ru:8090'
+
+SOCIAL_AUTH_NPOEDSSO_KEY = ''
+SOCIAL_AUTH_NPOEDSSO_SECRET = ''

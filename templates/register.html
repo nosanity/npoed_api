@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Регистрация приложения</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p>
+            <button name="submit" class="btn btn-success btn-block">Отправить</button>
+        </p>
+    </form>
+
+    {% if instance %}
+        <ul>
+            <li>url: {{ instance.url }}</li>
+            <li>id: {{ instance.app_id }}</li>
+            <li>secret: {{ instance.secret }}</li>
+        </ul>
+    {% endif %}
+{% endblock %}
