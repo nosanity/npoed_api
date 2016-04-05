@@ -1,5 +1,8 @@
 #coding: utf8
 
+import base64
+import requests
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from rest_framework.views import APIView
@@ -38,3 +41,28 @@ class PingView(APIView):
 
     def get(self, request, *args, **kwargs):
         return Response(status=status.HTTP_200_OK)
+
+
+def get_auth_header():
+    auth = base64.b64encode('{}:{}'.format(settings.SOCIAL_AUTH_NPOEDSSO_KEY, settings.SOCIAL_AUTH_NPOEDSSO_SECRET))
+    return {'Authorization': 'auth %s' % auth}
+
+
+class RegistrationView(APIView):
+    permission_classes = []
+    authentication_classes = []
+    request_url = '{}{}'.format(settings.SSO_NPOED_URL, '/registration-api/')
+
+    def get(self, request, *args, **kwargs):
+        try:
+            r = requests.get(self.request_url, headers=get_auth_header())
+            return Response(r.json())
+        except IOError:
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            r = requests.post(self.request_url, data=request.DATA, headers=get_auth_header())
+            return Response(r.json() if r.content else '', status=r.status_code)
+        except IOError:
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
